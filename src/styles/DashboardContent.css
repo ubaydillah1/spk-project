@@ -1,0 +1,61 @@
+/* Animasi gradasi latar belakang bergerak */
+.welcome-container {
+  position: relative;
+  height: 100vh;
+  background: linear-gradient(-45deg, #1e3a8a, #2563eb, #9333ea, #d946ef);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Overlay transparan agar teks terlihat jelas */
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  color: white;
+  max-width: 700px;
+  margin: 0 20px;
+}
+
+/* Typography dan tombol */
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.start-button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background-color: #facc15;
+  color: #000;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.start-button:hover {
+  background-color: #eab308;
+}
