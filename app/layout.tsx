@@ -29,6 +29,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <div className="fixed inset-0 -z-10 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e]" />
+
+          <div className="fixed top-1/3 left-1/2 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/20 blur-[120px] pointer-events-none -z-10" />
+
           <FallingStars />
           {children}
         </ThemeProvider>
