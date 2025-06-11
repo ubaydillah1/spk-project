@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Car, ArrowRight } from "lucide-react";
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
       <div className="flex flex-col sm:flex-row gap-4">
         <SignedIn>
           <Link
-            href="/dashboard"
+            href="/dashboard/users"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-md shadow hover:bg-primary/90 transition"
           >
             Masuk Sistem
@@ -27,7 +27,9 @@ export default function Home() {
 
         <SignedOut>
           <div className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-md shadow hover:bg-primary/90 transition">
-            <SignInButton> Masuk Sistem</SignInButton>
+            <a href="https://loyal-wolf-15.accounts.dev/sign-in?redirect_url=/dashboard/users">
+              Masuk Sistem
+            </a>
             <ArrowRight className="w-4 h-4" />
           </div>
         </SignedOut>
