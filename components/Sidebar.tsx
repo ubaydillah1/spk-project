@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Users,
   Sliders,
-  Layers,
   Car,
   Settings,
   Star,
@@ -24,11 +23,7 @@ const navItems = [
     label: "Kriteria",
     icon: <Sliders className="w-4 h-4" />,
   },
-  {
-    href: "/dashboard/subkriteria",
-    label: "Sub Kriteria",
-    icon: <Layers className="w-4 h-4" />,
-  },
+
   {
     href: "/dashboard/alternatif",
     label: "Alternatif",
