@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -19,85 +18,101 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { Car, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Car, Plus, Trash2 } from "lucide-react";
 
-type Alternatif = {
-  id: number;
-  nama: string;
-  tahun: number;
-  merek: string;
-  harga: number;
-  interior: string;
-  eksterior: string;
-  warna: string;
+type Alternative = {
+  id: string;
+  name: string;
+  values: { criteriaId: string; value: string }[];
 };
 
 export default function DataAlternatifPage() {
-  const [form, setForm] = useState({
-    nama: "",
-    tahun: "",
-    merek: "",
-    harga: "",
-    interior: "",
-    eksterior: "",
-    warna: "",
-  });
+  const [criteria, setCriteria] = useState<
+    { id: string; criteria_name: string }[]
+  >([]);
+  const [data, setData] = useState<Alternative[]>([]);
+  const [form, setForm] = useState<{
+    name: string;
+    values: Record<string, string>;
+  }>({ name: "", values: {} });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [data, setData] = useState<Alternatif[]>([
-    {
-      id: 1,
-      nama: "Avanza G",
-      tahun: 2020,
-      merek: "Toyota",
-      harga: 200000000,
-      interior: "Bagus",
-      eksterior: "Cukup",
-      warna: "Hitam",
-    },
-  ]);
+  // Fetch kriteria + alternatives
+  const fetchAll = async () => {
+    setLoading(true);
+    try {
+      const [cRes, aRes] = await Promise.all([
+        fetch("/api/criteria"),
+        fetch("/api/alternative"),
+      ]);
+      const [cData, aData] = await Promise.all([cRes.json(), aRes.json()]);
+      setCriteria(cData.data || []);
+      setData(aData.data || []);
+      setError(null);
+    } catch {
+      setError("Gagal fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleAdd = () => {
-    if (!form.nama || !form.tahun || !form.merek) return;
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
-    setData((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        nama: form.nama,
-        tahun: parseInt(form.tahun),
-        merek: form.merek,
-        harga: parseInt(form.harga),
-        interior: form.interior,
-        eksterior: form.eksterior,
-        warna: form.warna,
-      },
-    ]);
-    setForm({
-      nama: "",
-      tahun: "",
-      merek: "",
-      harga: "",
-      interior: "",
-      eksterior: "",
-      warna: "",
+  const handleAdd = async () => {
+    if (!form.name) return;
+    const payload = {
+      name: form.name,
+      userId: "user-id-dummy", // nanti diganti dari context/auth
+      values: criteria.map((c) => ({
+        criteriaId: c.id,
+        value: form.values[c.id] || "",
+      })),
+    };
+
+    const res = await fetch("/api/alternative", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
+
+    if (!res.ok) {
+      const d = await res.json();
+      setError(d.error || "Gagal menambah alternatif");
+      return;
+    }
+
+    setForm({ name: "", values: {} });
+    setDialogOpen(false);
+    fetchAll();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Yakin hapus?")) return;
+    const res = await fetch(`/api/alternative/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const d = await res.json();
+      setError(d.error || "Gagal hapus");
+      return;
+    }
+    fetchAll();
   };
 
   return (
     <div className="min-h-screen px-6 py-10 bg-background text-foreground flex justify-center">
-      <div className="w-full max-w-6xl space-y-6">
+      <div className="w-full max-w-7xl space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Car className="w-5 h-5 text-primary" />
-            Data Alternatif Mobil
+            <Car className="w-5 h-5 text-primary" /> Data Alternatif Mobil
           </h1>
-
-          <Dialog>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                Tambah Alternatif
+                <Plus className="w-4 h-4" /> Tambah Alternatif
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg rounded-xl shadow-xl max-h-[90vh] overflow-y-auto">
@@ -105,29 +120,30 @@ export default function DataAlternatifPage() {
                 <DialogTitle>Tambah Alternatif</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-2">
-                {[
-                  ["Nama Mobil", "nama"],
-                  ["Tahun", "tahun"],
-                  ["Merek", "merek"],
-                  ["Harga", "harga"],
-                  ["Interior", "interior"],
-                  ["Eksterior", "eksterior"],
-                  ["Warna", "warna"],
-                ].map(([label, key]) => (
-                  <div key={key} className="space-y-1">
-                    <Label>{label}</Label>
+                {error && <p className="text-red-500">{error}</p>}
+                <div className="space-y-1">
+                  <Label>Nama Alternatif</Label>
+                  <Input
+                    value={form.name}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                  />
+                </div>
+                {criteria.map((c) => (
+                  <div key={c.id} className="space-y-1">
+                    <Label>{c.criteria_name}</Label>
                     <Input
-                      type={
-                        key === "tahun" || key === "harga" ? "number" : "text"
-                      }
-                      value={(form as any)[key]}
+                      value={form.values[c.id] || ""}
                       onChange={(e) =>
-                        setForm((prev) => ({ ...prev, [key]: e.target.value }))
+                        setForm((prev) => ({
+                          ...prev,
+                          values: { ...prev.values, [c.id]: e.target.value },
+                        }))
                       }
                     />
                   </div>
                 ))}
-
                 <Button onClick={handleAdd} className="w-full mt-2">
                   Simpan
                 </Button>
@@ -137,34 +153,45 @@ export default function DataAlternatifPage() {
         </div>
 
         <div className="rounded-lg border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Nama</TableHead>
-                <TableHead>Tahun</TableHead>
-                <TableHead>Merek</TableHead>
-                <TableHead>Harga</TableHead>
-                <TableHead>Interior</TableHead>
-                <TableHead>Eksterior</TableHead>
-                <TableHead>Warna</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((alt) => (
-                <TableRow key={alt.id}>
-                  <TableCell>{alt.id}</TableCell>
-                  <TableCell>{alt.nama}</TableCell>
-                  <TableCell>{alt.tahun}</TableCell>
-                  <TableCell>{alt.merek}</TableCell>
-                  <TableCell>{alt.harga}</TableCell>
-                  <TableCell>{alt.interior}</TableCell>
-                  <TableCell>{alt.eksterior}</TableCell>
-                  <TableCell>{alt.warna}</TableCell>
+          {loading ? (
+            <p className="p-4 text-sm text-muted-foreground">Loading...</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Nama</TableHead>
+                  {criteria.map((c) => (
+                    <TableHead key={c.id}>{c.criteria_name}</TableHead>
+                  ))}
+                  <TableHead>Aksi</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {data.map((alt, i) => (
+                  <TableRow key={alt.id}>
+                    <TableCell>{i + 1}</TableCell>
+                    <TableCell>{alt.name}</TableCell>
+                    {criteria.map((c) => {
+                      const val = alt.values.find((v) => v.criteriaId === c.id);
+                      return (
+                        <TableCell key={c.id}>{val?.value ?? "-"}</TableCell>
+                      );
+                    })}
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(alt.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </div>
       </div>
     </div>

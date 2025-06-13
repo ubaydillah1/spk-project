@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import {
@@ -18,27 +19,83 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { useEffect, useState } from "react";
 import { UserPlus, Users } from "lucide-react";
 
 type User = {
-  id: number;
   username: string;
+  email: string;
   role: string;
 };
 
+const ROLE_OPTIONS = [
+  { value: "ADMIN", label: "Admin" },
+  { value: "USER", label: "User" },
+];
+
 export default function DataUserPage() {
-  const [users, setUsers] = useState<User[]>([
-    { id: 1, username: "admin", role: "Administrator" },
-    { id: 2, username: "user1", role: "User" },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const [newUser, setNewUser] = useState({ username: "", role: "" });
+  const [newUser, setNewUser] = useState({
+    username: "",
+    email: "",
+    password: "",
+    role: "",
+  });
 
-  const handleAddUser = () => {
-    if (!newUser.username || !newUser.role) return;
-    setUsers((prev) => [...prev, { id: Date.now(), ...newUser }]);
-    setNewUser({ username: "", role: "" });
+  useEffect(() => {
+    fetch("/api/users")
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data.users ?? []);
+        console.log(data.users);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Gagal mengambil data pengguna");
+        setLoading(false);
+      });
+  }, []);
+
+  const handleAddUser = async () => {
+    const { username, email, password, role } = newUser;
+    if (!username || !email || !password || !role) {
+      setError("Semua field wajib diisi");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setError(result?.error || "Gagal menambahkan user");
+        return;
+      }
+
+      setUsers((prev) => [...prev, { username, email, role }]);
+      setNewUser({ username: "", email: "", password: "", role: "" });
+      setError(null);
+      setDialogOpen(false);
+    } catch (err) {
+      setError("Gagal menghubungi server");
+    }
   };
 
   return (
@@ -50,7 +107,7 @@ export default function DataUserPage() {
             Data User
           </h1>
 
-          <Dialog>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="flex items-center gap-2">
                 <UserPlus className="w-4 h-4" />
@@ -66,10 +123,11 @@ export default function DataUserPage() {
               </DialogHeader>
 
               <div className="space-y-4 py-2">
+                {error && (
+                  <p className="text-red-500 text-sm font-medium">{error}</p>
+                )}
                 <div className="space-y-1">
-                  <Label htmlFor="username" className="my-2">
-                    Username
-                  </Label>
+                  <Label htmlFor="username">Username</Label>
                   <Input
                     id="username"
                     placeholder="Masukkan username"
@@ -81,16 +139,50 @@ export default function DataUserPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="role">Role</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
-                    id="role"
-                    placeholder="Masukkan role"
-                    value={newUser.role}
+                    id="email"
+                    type="email"
+                    placeholder="Masukkan email"
+                    value={newUser.email}
                     onChange={(e) =>
-                      setNewUser({ ...newUser, role: e.target.value })
+                      setNewUser({ ...newUser, email: e.target.value })
                     }
-                    className="my-2"
                   />
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Masukkan password"
+                    value={newUser.password}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, password: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="role">Role</Label>
+                  <Select
+                    value={newUser.role}
+                    onValueChange={(value) =>
+                      setNewUser({ ...newUser, role: value })
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ROLE_OPTIONS.map((role) => (
+                        <SelectItem key={role.value} value={role.value}>
+                          {role.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <Button onClick={handleAddUser} className="w-full mt-2">
@@ -102,24 +194,28 @@ export default function DataUserPage() {
         </div>
 
         <div className="rounded-lg border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>Role</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.id}</TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+          {loading ? (
+            <p className="p-4 text-sm text-muted-foreground">Memuat data...</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.email}>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.role}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </div>
       </div>
     </div>

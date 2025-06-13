@@ -22,6 +22,7 @@ enum CriterionType {
 model User {
   id       String        @id @default(uuid())
   username String
+  email    String        @unique
   role     Role          @default(USER)
   cars     Alternative[]
 

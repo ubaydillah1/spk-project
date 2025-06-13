@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/layout/Sidebar";
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   if (dbUser?.role !== "ADMIN") {
     redirect("/unauthorized");
   }
-  
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
