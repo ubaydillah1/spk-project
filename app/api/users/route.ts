@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import clerkClient from "@/lib/clerk";
 import prisma from "@/lib/prisma";
 import { User } from "@/types/user";
 
-export async function GET(request: Request) {
+export async function GET() {
   const users = await prisma.user.findMany();
 
   return Response.json({

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -15,7 +14,6 @@ import { useUser } from "@clerk/nextjs";
 import {
   Loader2,
   SlidersHorizontal,
-  BarChart3,
   Info,
   ListOrdered,
   ListChecks,
@@ -94,7 +92,7 @@ export default function MooraProsesPage() {
     });
 
     const sortedScores = [...norm]
-      .map((n, i) => ({ ...n, rank: 0 }))
+      .map((n) => ({ ...n, rank: 0 }))
       .sort((a, b) => b.score - a.score)
       .map((item, idx) => ({ ...item, rank: idx + 1 }));
 

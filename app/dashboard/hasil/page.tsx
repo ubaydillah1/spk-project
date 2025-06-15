@@ -1,37 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { useUser } from "@clerk/nextjs";
-import {
-  Loader2,
-  SlidersHorizontal,
-  BarChart3,
-  Info,
-  Star,
-} from "lucide-react";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
+import { Loader2, Star } from "lucide-react";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function MooraProsesPage() {
   const { user } = useUser();
   const [criteria, setCriteria] = useState<any[]>([]);
   const [alternatives, setAlternatives] = useState<any[]>([]);
-  const [normalized, setNormalized] = useState<any[]>([]);
   const [finalScores, setFinalScores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -88,11 +68,10 @@ export default function MooraProsesPage() {
     });
 
     const sortedScores = [...norm]
-      .map((n, i) => ({ ...n, rank: 0 }))
+      .map((n) => ({ ...n, rank: 0 }))
       .sort((a, b) => b.score - a.score)
       .map((item, idx) => ({ ...item, rank: idx + 1 }));
 
-    setNormalized(norm);
     setFinalScores(sortedScores);
   }, [criteria, alternatives]);
 

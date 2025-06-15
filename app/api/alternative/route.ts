@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
@@ -57,7 +56,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ data: created });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Gagal menambahkan alternatif" },
       { status: 500 }

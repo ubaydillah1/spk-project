@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import {
@@ -75,27 +74,23 @@ export default function DataUserPage() {
       return;
     }
 
-    try {
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser),
-      });
+    const res = await fetch("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newUser),
+    });
 
-      const result = await res.json();
+    const result = await res.json();
 
-      if (!res.ok) {
-        setError(result?.error || "Gagal menambahkan user");
-        return;
-      }
-
-      setUsers((prev) => [...prev, { username, email, role }]);
-      setNewUser({ username: "", email: "", password: "", role: "" });
-      setError(null);
-      setDialogOpen(false);
-    } catch (err) {
-      setError("Gagal menghubungi server");
+    if (!res.ok) {
+      setError(result?.error || "Gagal menambahkan user");
+      return;
     }
+
+    setUsers((prev) => [...prev, { username, email, role }]);
+    setNewUser({ username: "", email: "", password: "", role: "" });
+    setError(null);
+    setDialogOpen(false);
   };
 
   return (

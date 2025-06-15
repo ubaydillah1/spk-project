@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Sliders, Plus, Trash2, Pencil } from "lucide-react";
+import { Sliders, Plus, Trash2 } from "lucide-react";
 
 type Kriteria = {
   id: string;
@@ -47,8 +47,8 @@ export default function DataKriteriaPage() {
       const res = await fetch("/api/criteria");
       const data = await res.json();
       setKriteriaList(data.data || []);
-    } catch (err) {
-      setError("Gagal mengambil data kriteria");
+    } catch (error: any) {
+      setError(`Gagal mengambil data kriteria : ${(error as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -84,21 +84,17 @@ export default function DataKriteriaPage() {
     const confirm = window.confirm("Yakin ingin menghapus kriteria ini?");
     if (!confirm) return;
 
-    try {
-      const res = await fetch(`/api/criteria/${id}`, {
-        method: "DELETE",
-      });
+    const res = await fetch(`/api/criteria/${id}`, {
+      method: "DELETE",
+    });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Gagal menghapus kriteria");
-        return;
-      }
-
-      fetchData();
-    } catch (err) {
-      setError("Terjadi kesalahan saat menghapus data");
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || "Gagal menghapus kriteria");
+      return;
     }
+
+    fetchData();
   };
 
   useEffect(() => {

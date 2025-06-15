@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Car, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 
 type Alternative = {
@@ -51,7 +51,7 @@ export default function DataAlternatifPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     if (!user?.id) return;
 
     setLoading(true);
@@ -72,11 +72,10 @@ export default function DataAlternatifPage() {
     } finally {
       setLoading(false);
     }
-  };
-
+  }, [user?.id]);
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [fetchAll]);
 
   const handleAdd = async () => {
     if (!form.name || !user?.id) {

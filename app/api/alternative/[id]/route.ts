@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -12,7 +11,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ data: deleted });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Gagal menghapus alternatif" },
       { status: 500 }
