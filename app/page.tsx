@@ -27,7 +27,7 @@ export default function Home() {
 
         <SignedOut>
           <div className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-md shadow hover:bg-primary/90 transition">
-            <a href="https://loyal-wolf-15.accounts.dev/sign-in?redirect_url=http://localhost:3000/dashboard/users">
+            <a href="https://loyal-wolf-15.accounts.dev/sign-in?redirect_url=https://spk-project.vercel.app/dashboard/users">
               Masuk Sistem
             </a>
             <ArrowRight className="w-4 h-4" />
