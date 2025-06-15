@@ -3,10 +3,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: "userId wajib diberikan" },
+      { status: 400 }
+    );
+  }
+
   const alternatives = await prisma.alternative.findMany({
+    where: { userId },
     include: {
-      user: true,
       values: {
         include: {
           criteria: true,
