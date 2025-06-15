@@ -73,6 +73,7 @@ export default function DataAlternatifPage() {
       setLoading(false);
     }
   }, [user?.id]);
+
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
@@ -183,9 +184,19 @@ export default function DataAlternatifPage() {
           </Dialog>
         </div>
 
-        <div className="rounded-lg border overflow-x-auto">
+        <div className="rounded-lg border overflow-x-auto bg-white dark:bg-background">
           {loading ? (
             <p className="p-4 text-sm text-muted-foreground">Memuat data...</p>
+          ) : alternatives.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center py-20">
+              <Car className="w-12 h-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold text-muted-foreground">
+                Belum ada data alternatif
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Tambahkan alternatif mobil menggunakan tombol di atas.
+              </p>
+            </div>
           ) : (
             <Table>
               <TableHeader>

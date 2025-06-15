@@ -12,37 +12,47 @@ import {
   Star,
 } from "lucide-react";
 
-const navItems = [
+type SidebarProps = {
+  role: "ADMIN" | "USER";
+};
+
+const allNavItems = [
   {
     href: "/dashboard/users",
     label: "Data User",
     icon: <Users className="w-4 h-4" />,
+    roles: ["ADMIN"],
   },
   {
     href: "/dashboard/kriteria",
     label: "Kriteria",
     icon: <Sliders className="w-4 h-4" />,
+    roles: ["ADMIN"],
   },
-
   {
     href: "/dashboard/alternatif",
     label: "Alternatif",
     icon: <Car className="w-4 h-4" />,
+    roles: ["ADMIN", "USER"],
   },
   {
     href: "/dashboard/proses",
     label: "Proses SPK",
     icon: <Settings className="w-4 h-4" />,
+    roles: ["ADMIN", "USER"],
   },
   {
     href: "/dashboard/hasil",
     label: "Hasil",
     icon: <Star className="w-4 h-4" />,
+    roles: ["ADMIN", "USER"],
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
+
+  const navItems = allNavItems.filter((item) => item.roles.includes(role));
 
   return (
     <aside className="hidden md:block w-64 h-screen fixed left-0 top-0 border-r bg-background p-6 z-20">

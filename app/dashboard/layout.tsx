@@ -9,15 +9,20 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
-  const dbUser = await prisma.user.findUnique({ where: { id: user?.id } });
 
-  if (dbUser?.role !== "ADMIN") {
+  if (!user?.id) {
+    redirect("/sign-in");
+  }
+
+  const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+
+  if (!dbUser) {
     redirect("/unauthorized");
   }
 
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar />
+      <Sidebar role={dbUser.role} />
       <main className="flex-1 ml-0 md:ml-72 p-6 min-h-screen bg-background">
         {children}
       </main>

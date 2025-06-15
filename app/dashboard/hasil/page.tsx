@@ -95,26 +95,38 @@ export default function MooraProsesPage() {
             </h2>
           </div>
 
-          <div className="grid gap-4">
-            {finalScores.map((item, index) => (
-              <Card key={item.name} className="border-l-4 border-primary">
-                <CardHeader className="flex flex-row justify-between items-center">
-                  <CardTitle>
-                    #{index + 1} {item.name}
-                  </CardTitle>
-                  <div className="text-muted-foreground">
-                    Skor: {item.score.toFixed(4)}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Alternatif {item.name} direkomendasikan berdasarkan skor
-                    MOORA {item.score.toFixed(4)}.
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {!finalScores.length ? (
+            <div className="flex flex-col items-center justify-center text-center py-20">
+              <Star className="w-12 h-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold text-muted-foreground">
+                Belum ada hasil rekomendasi
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Tambahkan alternatif terlebih dahulu untuk melihat hasil.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {finalScores.map((item, index) => (
+                <Card key={item.name} className="border-l-4 border-primary">
+                  <CardHeader className="flex flex-row justify-between items-center">
+                    <CardTitle>
+                      #{index + 1} {item.name}
+                    </CardTitle>
+                    <div className="text-muted-foreground">
+                      Skor: {item.score.toFixed(4)}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Alternatif {item.name} direkomendasikan berdasarkan skor
+                      MOORA {item.score.toFixed(4)}.
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </TooltipProvider>
