@@ -1,0 +1,62 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  output        = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CriterionType {
+  BENEFIT
+  COST
+}
+
+model User {
+  id       String        @id @default(uuid())
+  username String
+  email    String        @unique
+  role     Role          @default(USER)
+  cars     Alternative[]
+
+  @@map("users")
+}
+
+model Criteria {
+  id                       String                     @id @default(uuid())
+  criteria_name            String
+  weight                   Float
+  criterion_type           CriterionType
+  AlternativeCriteriaValue AlternativeCriteriaValue[]
+
+  @@map("criteria")
+}
+
+model Alternative {
+  id     String                     @id @default(uuid())
+  name   String
+  user   User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  values AlternativeCriteriaValue[]
+
+  @@map("alternatives")
+}
+
+model AlternativeCriteriaValue {
+  id            String      @id @default(uuid())
+  alternative   Alternative @relation(fields: [alternativeId], references: [id], onDelete: Cascade)
+  alternativeId String
+  criteria      Criteria    @relation(fields: [criteriaId], references: [id], onDelete: Cascade)
+  criteriaId    String
+  value         String
+
+  @@unique([alternativeId, criteriaId])
+}
