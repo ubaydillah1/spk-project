@@ -156,7 +156,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\User\\Documents\\PEMROGRAMAN\\OnGoing\\spk\\prisma\\lib\\generated\\prisma",
+      "value": "C:\\Users\\Ubay Dillah\\Documents\\Pemrograman\\On Going\\spk-project\\prisma\\lib\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -178,11 +178,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\User\\Documents\\PEMROGRAMAN\\OnGoing\\spk\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\Ubay Dillah\\Documents\\Pemrograman\\On Going\\spk-project\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../../../.env"
   },
   "relativePath": "../../..",
@@ -192,7 +192,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

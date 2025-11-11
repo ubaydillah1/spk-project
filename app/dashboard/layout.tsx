@@ -10,14 +10,23 @@ export default async function DashboardLayout({
 }) {
   const user = await currentUser();
 
-  if (!user?.id) {
-    redirect("/sign-in");
-  }
+  if (!user?.id) redirect("/sign-in");
 
-  const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+  let dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+  });
 
   if (!dbUser) {
-    redirect("/unauthorized");
+    const userCount = await prisma.user.count();
+
+    dbUser = await prisma.user.create({
+      data: {
+        id: user.id,
+        email: user.emailAddresses?.[0]?.emailAddress ?? "",
+        username: user.firstName ?? "User",
+        role: userCount === 0 ? "ADMIN" : "USER",
+      },
+    });
   }
 
   return (
