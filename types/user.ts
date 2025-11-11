@@ -1,4 +1,4 @@
-import { Role } from "@/prisma/lib/generated/prisma";
+import { Role } from "@prisma/client";
 
 export type User = {
   username: string;
